@@ -26,6 +26,7 @@ joined as (
         , o.tracking_id
         , o.shipping_service
         , o.shipping_cost
+        , o.order_cost_usd
         , o.order_total
         , o.status
         , o.date_load

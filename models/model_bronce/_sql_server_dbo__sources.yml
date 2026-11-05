@@ -47,6 +47,7 @@ sources:
           - name: product_id
             data_tests:
               - not_null
+              - relationships
       - name: promos
         columns:
           - name: promo_id
