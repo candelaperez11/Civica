@@ -20,11 +20,10 @@ final as (
           {{ dbt_utils.generate_surrogate_key(['s.user_id', 's.session_id']) }} as user_session_id
         , s.session_id
         , s.user_id
-        , u.country                                 as user_country
         , s.session_start_at_utc
         , s.session_end_at_utc
         , s.session_duration_seconds
-        , round(s.session_duration_seconds / 60, 2) as session_duration_minutes
+        , {{seconds_to_minutes('s.session_duration_seconds', 2)}} as session_duration_minutes
         , s.page_view_count
         , s.add_to_cart_count
         , s.checkout_count
