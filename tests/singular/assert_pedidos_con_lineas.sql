@@ -1,13 +1,14 @@
 
 with orders as (
-    select * from {{ ref('fct_orders') }} 
+    select * from {{ ref('fct_orders') }}
 ),
 order_items as (
-    select * from {{ ref('fct_order_items') }} 
+    select * from {{ ref('fct_order_items') }}
 )
 
 select
     o.*
-from orders o 
-    left join order_items i 
+from orders o
+left join order_items i
     on o.order_id = i.order_id
+where i.order_id is null
