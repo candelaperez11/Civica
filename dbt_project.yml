@@ -71,10 +71,16 @@ models:
         +schema: intermediate
       core:
         +schema: core
+        +meta:
+          owner: "core"
       marketing:
         +schema: marketing
+        +meta:
+          owner: "marketing"
       product:
         +schema: product
+        +meta:
+          owner: "product"
 
 # =============================================================================
 # Seeds

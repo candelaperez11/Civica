@@ -10,3 +10,8 @@ sources:
           - name: _row
             data_tests:
               - not_null
+              - unique
+          - name: quantity 
+            data_tests : [positive_values]
+
+
