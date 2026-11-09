@@ -11,7 +11,7 @@
 
 {{
     config(
-        target_database='DBT_SILVER_DB',
+        target_database='DEV_SILVER_DB',
         target_schema='snapshots_legacy',
         unique_key='_row',
         strategy='check',
