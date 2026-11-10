@@ -1,4 +1,3 @@
-
 # =============================================================================
 # dbt_project.yml · Curso de Data Engineering (dbt + Snowflake) · Cívica
 # =============================================================================
@@ -9,11 +8,15 @@
 # =============================================================================
 
 name: curso_data_engineering
-version: '1.0.0'
+version: "1.0.0"
 
 # Solo se usa al ejecutar dbt en local con profiles.yml. En dbt Platform la
 # conexión se define en el proyecto y en las credenciales de cada entorno.
 profile: default
+
+vars:
+  low_stock_threshold: 10
+  budget_start_date: "2024-01-01"
 
 model-paths: ["models"]
 analysis-paths: ["analyses"]
@@ -66,7 +69,7 @@ models:
     #     prefijo del modelo (dim_, fct_, agg_, int_).
     model_gold:
       +materialized: table
-      +database: DEV_GOLD_DB 
+      +database: DEV_GOLD_DB
       intermediate:
         +materialized: view
         +schema: intermediate
