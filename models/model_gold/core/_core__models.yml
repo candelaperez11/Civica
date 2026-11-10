@@ -102,7 +102,7 @@ models:
                 to: ref('dim_users')
                 field: user_id
       - name: order_status
-        description: '{{ doc("order_status") }}'
+        description: _marketing__docs
       - name: net_order_cost_usd
         description: total_order_cost_usd menos el descuento de la promoción.
 
