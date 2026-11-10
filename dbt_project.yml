@@ -111,3 +111,6 @@ snapshots:
     +database: DEV_SILVER_DB
     +schema: snapshots
     +transient: false
+
+on-run-end:
+  - "{{ log_run_summary(results) }}"
