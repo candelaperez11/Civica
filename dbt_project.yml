@@ -54,6 +54,7 @@ models:
         +schema: sql_server_dbo
       google_sheets:
         +schema: google_sheets
+      +tags: ['staging']
 
     # --- Silver: limpieza y deduplicación. Tablas: la deduplicación es cara y
     #     no queremos repetirla en cada consulta.
@@ -64,6 +65,7 @@ models:
         +schema: sql_server_dbo
       google_sheets:
         +schema: google_sheets
+        +tags: ['silver']
 
     # --- Gold: consumo. La capa la marca la database; el tipo de tabla, el
     #     prefijo del modelo (dim_, fct_, agg_, int_).
@@ -77,6 +79,7 @@ models:
         +schema: core
         +meta:
           owner: equipo-datos-core
+          +tag: ['core']
       marketing:
         +schema: marketing
         +meta:
@@ -85,6 +88,7 @@ models:
         +schema: product
         +meta:
           owner: equipo-producto
+      +tags: ['gold']
 
 # =============================================================================
 # Seeds
