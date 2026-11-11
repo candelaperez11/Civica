@@ -8,11 +8,15 @@
 # =============================================================================
 
 name: curso_data_engineering
-version: '1.0.0'
+version: "1.0.0"
 
 # Solo se usa al ejecutar dbt en local con profiles.yml. En dbt Platform la
 # conexión se define en el proyecto y en las credenciales de cada entorno.
 profile: default
+
+vars:
+  low_stock_threshold: 10
+  budget_start_date: "2024-01-01"
 
 model-paths: ["models"]
 analysis-paths: ["analyses"]
@@ -50,6 +54,7 @@ models:
         +schema: sql_server_dbo
       google_sheets:
         +schema: google_sheets
+      +tags: ['staging']
 
     # --- Silver: limpieza y deduplicación. Tablas: la deduplicación es cara y
     #     no queremos repetirla en cada consulta.
@@ -60,6 +65,7 @@ models:
         +schema: sql_server_dbo
       google_sheets:
         +schema: google_sheets
+        +tags: ['silver']
 
     # --- Gold: consumo. La capa la marca la database; el tipo de tabla, el
     #     prefijo del modelo (dim_, fct_, agg_, int_).
@@ -72,15 +78,19 @@ models:
       core:
         +schema: core
         +meta:
-          owner: "core"
+          owner: equipo-datos-core
+          +tag: ['core']
+          
       marketing:
         +schema: marketing
         +meta:
-          owner: "marketing"
+          owner: equipo-marketing-analytics
+          +tag: ['marketing']
       product:
         +schema: product
         +meta:
-          owner: "product"
+          owner: equipo-producto
+      +tags: ['gold']
 
 # =============================================================================
 # Seeds
@@ -97,3 +107,16 @@ seeds:
         country_name: varchar(100)
         continent: varchar(50)
 
+# =============================================================================
+# Snapshots (día 5)
+# =============================================================================
+# Historial SCD2 en Silver. Nunca transient: un snapshot es la única copia de
+# la historia y no se puede reconstruir desde Bronze.
+snapshots:
+  curso_data_engineering:
+    +database: DEV_SILVER_DB
+    +schema: snapshots
+    +transient: false
+
+on-run-end:
+  - "{{ log_run_summary(results) }}"
