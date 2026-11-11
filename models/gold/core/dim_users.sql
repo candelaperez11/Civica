@@ -32,4 +32,4 @@ final as (
     left join addresses a on u.address_id = a.address_id
 )
 
-select * from final; 
+select * from final
