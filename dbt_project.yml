@@ -8,15 +8,11 @@
 # =============================================================================
 
 name: curso_data_engineering
-version: "1.0.0"
+version: '1.0.0'
 
 # Solo se usa al ejecutar dbt en local con profiles.yml. En dbt Platform la
 # conexión se define en el proyecto y en las credenciales de cada entorno.
 profile: default
-
-vars:
-  low_stock_threshold: 10
-  budget_start_date: "2024-01-01"
 
 model-paths: ["models"]
 analysis-paths: ["analyses"]
@@ -33,11 +29,34 @@ docs-paths: ["docs"]
 clean-targets: ["target", "dbt_packages"]
 
 # =============================================================================
+# Variables de proyecto (día 6)
+# =============================================================================
+# Se leen con {{ var('nombre') }} y se pueden sobrescribir en cada ejecución:
+#   dbt build --vars '{budget_start_date: 2025-01-01, low_stock_threshold: 20}'
+vars:
+  # Presupuesto anterior a esta fecha se descarta en slv_google_sheets__budget
+  budget_start_date: '2020-01-01'
+  # Por debajo de este número de unidades, dim_products marca 'low_stock'
+  low_stock_threshold: 10
+
+# =============================================================================
+# Hooks de ejecución (día 6)
+# =============================================================================
+# on-run-end se ejecuta una vez al terminar cada dbt run/build/test/seed/snapshot
+# y recibe `results` con el resultado de cada nodo.
+on-run-end:
+  - "{{ log_run_summary(results) }}"
+
+# =============================================================================
 # Modelos · arquitectura Medallion Cívica
 # =============================================================================
 # Cada capa escribe en su database, que llega por variable de entorno
 # (DBT_SILVER_DB, DBT_GOLD_DB): el mismo código sirve en desarrollo, DEV, PRE
 # y PRO. Bronze no aparece aquí: dbt solo la lee con source().
+# Cada capa lleva un tag con su nombre (día 6) para poder seleccionarla:
+#   dbt build --select tag:silver      (o el selector capa_silver)
+# Día 8: cada carpeta de Gold pertenece a un group (models/_groups.yml) y
+# declara su access.
 # =============================================================================
 models:
   curso_data_engineering:
@@ -49,48 +68,59 @@ models:
     #     almacenamiento y siempre reflejan Bronze.
     staging:
       +materialized: view
-      +database: DEV_SILVER_DB
+      +database: "{{ env_var('DBT_SILVER_DB') }}"
+      +tags: ['staging']
       sql_server_dbo:
         +schema: sql_server_dbo
       google_sheets:
         +schema: google_sheets
-      +tags: ['staging']
 
     # --- Silver: limpieza y deduplicación. Tablas: la deduplicación es cara y
     #     no queremos repetirla en cada consulta.
     silver:
       +materialized: table
-      +database: DEV_SILVER_DB
+      +database: "{{ env_var('DBT_SILVER_DB') }}"
+      +tags: ['silver']
       sql_server_dbo:
         +schema: sql_server_dbo
       google_sheets:
         +schema: google_sheets
-        +tags: ['silver']
 
     # --- Gold: consumo. La capa la marca la database; el tipo de tabla, el
     #     prefijo del modelo (dim_, fct_, agg_, int_).
     gold:
       +materialized: table
-      +database: DEV_GOLD_DB
+      +database: "{{ env_var('DBT_GOLD_DB') }}"
+      +tags: ['gold']
       intermediate:
         +materialized: view
         +schema: intermediate
+        # Lógica de apoyo: solo la pueden usar los modelos de su group
+        +group: core
+        +access: private
       core:
         +schema: core
         +meta:
           owner: equipo-datos-core
-          +tag: ['core']
-          
+        # Dimensiones y hechos compartidos: cualquiera puede usarlos
+        +group: core
+        +access: public
       marketing:
         +schema: marketing
         +meta:
           owner: equipo-marketing-analytics
-          +tag: ['marketing']
+        +group: marketing
       product:
         +schema: product
         +meta:
           owner: equipo-producto
-      +tags: ['gold']
+        +group: product
+
+      # Día 8 · grants declarativos (alternativa a la macro grant_select_on_gold).
+      # dbt aplica el grant cada vez que construye el modelo. Descomenta y pon un
+      # rol que exista en tu cuenta de Snowflake, o el build fallará:
+      # +grants:
+      #   select: ['REPORTING_ROLE']
 
 # =============================================================================
 # Seeds
@@ -98,7 +128,7 @@ models:
 # Van a Silver y no a Bronze: Bronze solo la escribe la herramienta de ingesta.
 seeds:
   curso_data_engineering:
-    +database: DEV_SILVER_DB
+    +database: "{{ env_var('DBT_SILVER_DB') }}"
     +schema: seeds
     country_codes:
       # Tipos explícitos para que dbt no los infiera del CSV
@@ -114,9 +144,6 @@ seeds:
 # la historia y no se puede reconstruir desde Bronze.
 snapshots:
   curso_data_engineering:
-    +database: DEV_SILVER_DB
+    +database: "{{ env_var('DBT_SILVER_DB') }}"
     +schema: snapshots
     +transient: false
-
-on-run-end:
-  - "{{ log_run_summary(results) }}"
