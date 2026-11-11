@@ -11,6 +11,7 @@ selectors:
     definition:
       method: tag
       value: silver
+      
   - name: capa_staging
     description: Todos los modelos de staging 
     definition:

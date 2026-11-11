@@ -47,7 +47,7 @@ models:
 
     # --- Staging: casting y renaming, 1:1 con Bronze. Vistas: no ocupan
     #     almacenamiento y siempre reflejan Bronze.
-    model_staging:
+    staging:
       +materialized: view
       +database: DEV_SILVER_DB
       sql_server_dbo:
@@ -58,7 +58,7 @@ models:
 
     # --- Silver: limpieza y deduplicación. Tablas: la deduplicación es cara y
     #     no queremos repetirla en cada consulta.
-    model_silver:
+    silver:
       +materialized: table
       +database: DEV_SILVER_DB
       sql_server_dbo:
@@ -69,7 +69,7 @@ models:
 
     # --- Gold: consumo. La capa la marca la database; el tipo de tabla, el
     #     prefijo del modelo (dim_, fct_, agg_, int_).
-    model_gold:
+    gold:
       +materialized: table
       +database: DEV_GOLD_DB
       intermediate:
@@ -80,10 +80,12 @@ models:
         +meta:
           owner: equipo-datos-core
           +tag: ['core']
+          
       marketing:
         +schema: marketing
         +meta:
           owner: equipo-marketing-analytics
+          +tag: ['marketing']
       product:
         +schema: product
         +meta:
