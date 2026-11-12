@@ -13,7 +13,7 @@ exposures:
     maturity: medium
     description: Segmentación de clientes por número de compras y gasto.
     depends_on:
-      - ref('agg_user_purchases')
+      - ref('dim_users', v=1)
     owner:
       name: Equipo de Marketing Analytics
       email: marketing-analytics@ejemplo.com
