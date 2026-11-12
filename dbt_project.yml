@@ -84,6 +84,24 @@ models:
           owner: equipo-datos-core
           +tag: ['core']
         
+        dim_addresses:
+          +group: core
+
+        dim_dates:
+          +group: core
+
+        dim_products:
+          +group: core
+        
+        dim_users_v1:
+          +group: core
+
+        dim_users_v2: 
+          +group: core
+
+        events_sin_id:
+          +group: core
+
         fct_events:
           +group: core
 
