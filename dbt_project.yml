@@ -75,21 +75,45 @@ models:
       intermediate:
         +materialized: view
         +schema: intermediate
+
       core:
         +schema: core
+        +group: core
+        +access: public
         +meta:
           owner: equipo-datos-core
           +tag: ['core']
+        
+        fct_events:
+          +group: core
+
+        fct_order_items:
+          +group: core
+
+        fct_orders:
+          +group: core
           
       marketing:
         +schema: marketing
+        +group: marketing
+        +access: public
         +meta:
           owner: equipo-marketing-analytics
           +tag: ['marketing']
+
+        agg_user_purchases:
+          +group: marketing
+
       product:
         +schema: product
+        +group: product
+        +access: public
         +meta:
           owner: equipo-producto
+        
+        agg_user_sessions:
+          +group: product
+
       +tags: ['gold']
 
 # =============================================================================
