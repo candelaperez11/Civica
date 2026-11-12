@@ -76,7 +76,6 @@ models:
         +materialized: view
         +schema: intermediate
 
-
       core:
         +schema: core
         +group: core
@@ -84,6 +83,8 @@ models:
         +meta:
           owner: equipo-datos-core
           +tag: ['core']
+        +grants: 
+          select: ['REPORTING_ROLE']
         
         dim_addresses:
           +group: core
@@ -119,6 +120,8 @@ models:
         +meta:
           owner: equipo-marketing-analytics
           +tag: ['marketing']
+        +grants: 
+          select: ['REPORTING_ROLE']
 
         agg_user_purchases:
           +group: marketing
@@ -129,6 +132,8 @@ models:
         +access: public
         +meta:
           owner: equipo-producto
+        +grants: 
+          select: ['REPORTING_ROLE']
         
         agg_user_sessions:
           +group: product
