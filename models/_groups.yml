@@ -24,3 +24,9 @@ groups:
     owner:
       name: Equipo de Producto
       email: producto@ejemplo.com
+
+  - name: intermediate
+    owner:
+      name: Equipo de intermedio
+      email: intermedio@ejemplo.com
+
