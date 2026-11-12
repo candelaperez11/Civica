@@ -76,6 +76,7 @@ models:
         +materialized: view
         +schema: intermediate
 
+
       core:
         +schema: core
         +group: core
