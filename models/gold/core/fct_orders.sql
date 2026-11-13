@@ -26,8 +26,8 @@ final as (
         , estimated_delivery_at_utc
         , delivered_at_utc
         , days_to_deliver
-        , date_load,
-        discount_usd - total_order_cost_usd -discount_usd     as new
+        , date_load
+        , total_order_cost_usd - discount_usd as NEW3
     from orders
 )
 
